@@ -52,6 +52,8 @@ export default function Register() {
 
   return (
     <>
+      <h1 className="font-bold text-4xl mb-3">Register</h1>
+
       <Form
         method="POST"
         className="border border-neutral rounded-lg p-5 flex flex-col gap-3 mx-auto max-w-xs"
