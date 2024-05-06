@@ -21,7 +21,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   const existingUser = await db.user.findUnique({
-    where: { email: email.toLocaleLowerCase() },
+    where: { email: email.trim().toLowerCase() },
   });
   if (existingUser) {
     return {
