@@ -24,6 +24,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const currentUser = useCurrentUser();
+
   return (
     <html lang="en">
       <head>
@@ -33,7 +35,37 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <div className="navbar bg-base-100">
+          <div className="flex-1">
+            <a className="btn btn-ghost text-xl" href="/">
+              Remix Passkeys Demo
+            </a>
+          </div>
+
+          <div className="flex-none">
+            <ul className="menu menu-horizontal px-1">
+              {currentUser ? (
+                <li>
+                  <Form method="POST" action="/logout">
+                    <button>logout</button>
+                  </Form>
+                </li>
+              ) : (
+                <>
+                  <li>
+                    <a href="/login">login</a>
+                  </li>
+                  <li>
+                    <a href="/register">register</a>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-xs my-10">{children}</div>
+
         <ScrollRestoration />
         <Scripts />
       </body>
