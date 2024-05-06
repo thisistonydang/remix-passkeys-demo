@@ -9,6 +9,13 @@ export const meta: MetaFunction = () => {
   return [{ title: "Remix Passkeys Demo" }];
 };
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getUserSession(request);
+  if (!session) return redirect("/login");
+
+  return {};
+}
+
 export default function Index() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
