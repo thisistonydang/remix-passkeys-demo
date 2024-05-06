@@ -9,6 +9,36 @@ import {
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 
+export async function action({ request }: ActionFunctionArgs) {
+  const form = await request.formData();
+  const email = form.get("email");
+
+  if (!email || typeof email !== "string") {
+    return {
+      status: 400,
+      message: "Email is required.",
+    };
+  }
+
+  const existingUser = await db.user.findUnique({
+    where: { email: email.toLocaleLowerCase() },
+  });
+  if (existingUser) {
+    return {
+      status: 400,
+      message: "This email is already registered. Please login instead.",
+    };
+  }
+
+  const newUser = await db.user.create({
+    data: {
+      email,
+    },
+  });
+
+  const headers = await createUserSession(newUser.id);
+  return redirect("/", { headers });
+}
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getUserSession(request);
