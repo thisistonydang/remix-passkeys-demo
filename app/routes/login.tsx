@@ -9,6 +9,13 @@ import {
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getUserSession(request);
+  if (session) return redirect("/");
+
+  return {};
+}
+
 export default function Login() {
   const actionData = useActionData<typeof action>();
 
