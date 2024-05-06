@@ -64,7 +64,6 @@ export default function Register() {
             id="email"
             type="email"
             name="email"
-            required
           />
         </label>
 
