@@ -1,4 +1,5 @@
 import {
+  Form,
   Links,
   Meta,
   Outlet,
@@ -6,7 +7,11 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css?url";
-import type { LinksFunction } from "@remix-run/node";
+
+import { useCurrentUser } from "./hooks/useCurrentUser";
+import { getCurrentUser } from "./modules/session/session.server";
+
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
