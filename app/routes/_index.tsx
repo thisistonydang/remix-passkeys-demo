@@ -1,4 +1,9 @@
-import type { MetaFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
+
+import { useCurrentUser } from "~/hooks/useCurrentUser";
+import { getUserSession } from "~/modules/session/session.server";
+
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 
 export const meta: MetaFunction = () => {
   return [
