@@ -22,6 +22,31 @@ export const meta: MetaFunction = () => {
   return [{ title: "Remix Passkeys Demo" }];
 };
 
+export async function action({ request }: ActionFunctionArgs) {
+  const session = await getUserSession(request);
+  const user = await db.user.findUnique({
+    where: { id: session?.userId },
+    include: { authenticators: true },
+  });
+  if (!user) throw redirect("/login");
+
+  const formData = await request.formData();
+  const registrationResponseJson = formData.get("registrationResponseJson");
+  if (typeof registrationResponseJson !== "string")
+    return { verification: { verified: false } };
+
+  try {
+    const registrationResponse = JSON.parse(registrationResponseJson);
+    const verification = await verifyPasskeyRegistrationResponse(
+      user,
+      registrationResponse
+    );
+    return { verification };
+  } catch {
+    return { verification: { verified: false } };
+  }
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getUserSession(request);
   const user = await db.user.findUnique({
