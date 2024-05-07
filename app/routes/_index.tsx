@@ -24,9 +24,15 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getUserSession(request);
-  if (!session) return redirect("/login");
+  const user = await db.user.findUnique({
+    where: { id: session?.userId },
+    include: { authenticators: true },
+  });
+  if (!user) throw redirect("/login");
 
-  return {};
+  return {
+    options: await getPasskeyRegistrationOptions(user),
+  };
 }
 
 export default function Index() {
