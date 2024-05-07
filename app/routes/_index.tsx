@@ -16,13 +16,16 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
+import type { VerifiedRegistrationResponse } from "@simplewebauthn/server";
 import type { FormEvent } from "react";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Remix Passkeys Demo" }];
 };
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs): Promise<{
+  verification: VerifiedRegistrationResponse | undefined;
+}> {
   const session = await getUserSession(request);
   const user = await db.user.findUnique({
     where: { id: session?.userId },
