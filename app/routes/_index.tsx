@@ -36,6 +36,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
+  const { options } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   const currentUser = useCurrentUser();
 
   return (
