@@ -97,8 +97,39 @@ export default function Index() {
   }
 
   return (
-    <h1 className="text-2xl font-bold">
-      Hi {currentUser?.email}, you are logged in!
-    </h1>
+    <>
+      <h1 className="text-2xl font-bold">
+        Hi {currentUser?.email}, you are logged in!
+      </h1>
+
+      <div className="flex justify-center my-10">
+        <form
+          onSubmit={addPasskey}
+          method="POST"
+          className="flex flex-col items-center gap-2"
+        >
+          <button className="btn btn-accent">
+            {processingPasskey ? "Creating Passkey..." : "Add a Passkey"}
+          </button>
+
+          {passkeyError ? (
+            <p className="text-sm text-red-600 text-center" role="alert">
+              {passkeyError}
+            </p>
+          ) : actionData?.verification?.verified === false ? (
+            <p className="text-sm text-red-600 text-center" role="alert">
+              Failed to create passkey. Please try again.
+            </p>
+          ) : (
+            actionData?.verification?.verified && (
+              <p className="text-sm text-green-600 text-center" role="alert">
+                Passkey created successfully. Try logging out and back in to use
+                it.
+              </p>
+            )
+          )}
+        </form>
+      </div>
+    </>
   );
 }
