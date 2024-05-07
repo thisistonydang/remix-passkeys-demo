@@ -52,8 +52,10 @@ export async function action({ request }: ActionFunctionArgs): Promise<{
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getUserSession(request);
+  if (!session) throw redirect("/login");
+
   const user = await db.user.findUnique({
-    where: { id: session?.userId },
+    where: { id: session.userId },
     include: { authenticators: true },
   });
   if (!user) throw redirect("/login");
