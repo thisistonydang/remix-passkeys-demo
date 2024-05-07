@@ -69,7 +69,7 @@ export default function Register() {
           />
         </label>
 
-        <button className="btn btn-accent">Register a Passkey</button>
+        <button className="btn btn-accent">Register</button>
       </Form>
 
       {actionData && actionData.message && (
