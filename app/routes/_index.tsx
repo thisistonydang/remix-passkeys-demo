@@ -68,6 +68,11 @@ export default function Index() {
   const actionData = useActionData<typeof action>();
   const currentUser = useCurrentUser();
 
+  const submit = useSubmit();
+
+  const [processingPasskey, setProcessingPasskey] = useState(false);
+  const [passkeyError, setPasskeyError] = useState("");
+
   return (
     <h1 className="text-2xl font-bold">
       Hi {currentUser?.email}, you are logged in!
