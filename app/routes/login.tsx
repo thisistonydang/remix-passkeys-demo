@@ -1,13 +1,17 @@
 import { redirect } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { useActionData, useSubmit } from "@remix-run/react";
+import { startAuthentication } from "@simplewebauthn/browser";
+import { useState } from "react";
 
 import { db } from "~/modules/database/db.server";
 import {
   createUserSession,
   getUserSession,
 } from "~/modules/session/session.server";
+import { verifyPasskeyAuthenticationResponse } from "~/modules/session/webauthn.server";
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type { FormEvent } from "react";
 
 export async function action({ request }: ActionFunctionArgs) {
   const form = await request.formData();
