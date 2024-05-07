@@ -73,6 +73,29 @@ export default function Index() {
   const [processingPasskey, setProcessingPasskey] = useState(false);
   const [passkeyError, setPasskeyError] = useState("");
 
+  async function addPasskey(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (actionData?.verification) actionData.verification = undefined;
+    setPasskeyError("");
+    setProcessingPasskey(true);
+
+    try {
+      const registrationResponse = await startRegistration(options);
+      submit(
+        { registrationResponseJson: JSON.stringify(registrationResponse) },
+        { method: "POST" }
+      );
+    } catch (error) {
+      if (error instanceof Error && error.name === "InvalidStateError") {
+        setPasskeyError("A passkey already exists on the device chosen.");
+      } else {
+        setPasskeyError("Failed to create passkey. Please try again.");
+      }
+    } finally {
+      setProcessingPasskey(false);
+    }
+  }
+
   return (
     <h1 className="text-2xl font-bold">
       Hi {currentUser?.email}, you are logged in!
