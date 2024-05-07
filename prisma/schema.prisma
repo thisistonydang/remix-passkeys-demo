@@ -12,3 +12,23 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id               String          @id @default(uuid())
+  email            String          @unique
+  currentChallenge String?
+  authenticators   Authenticator[]
+}
+
+model Authenticator {
+  id                   String  @id @default(uuid())
+  userId               String
+  credentialID         String  @db.Text
+  credentialPublicKey  Bytes
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  user                 User    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
