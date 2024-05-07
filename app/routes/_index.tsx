@@ -1,9 +1,22 @@
 import { redirect } from "@remix-run/node";
+import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
+import { startRegistration } from "@simplewebauthn/browser";
+import { useState } from "react";
 
 import { useCurrentUser } from "~/hooks/useCurrentUser";
+import { db } from "~/modules/database/db.server";
 import { getUserSession } from "~/modules/session/session.server";
+import {
+  getPasskeyRegistrationOptions,
+  verifyPasskeyRegistrationResponse,
+} from "~/modules/session/webauthn.server";
 
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
+import type { FormEvent } from "react";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Remix Passkeys Demo" }];
