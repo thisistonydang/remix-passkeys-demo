@@ -108,11 +108,66 @@ export async function verifyPasskeyRegistrationResponse(
     return { verified: false };
   }
 }
-      });
-      await db.user.update({
-        where: { id: user.id },
-        data: { currentChallenge: null },
-      });
+
+export async function getPasskeyAuthenticationOptions(
+  user: UserWithAuthenticators
+) {
+  const options = await generateAuthenticationOptions({
+    rpID,
+    allowCredentials: user.authenticators.map((authenticator) => ({
+      type: "public-key",
+      id: new Uint8Array(Buffer.from(authenticator.credentialID, "base64")),
+    })),
+    userVerification: "preferred",
+  });
+
+  await db.user.update({
+    where: { id: user.id },
+    data: { currentChallenge: options.challenge },
+  });
+
+  return options;
+}
+
+export async function verifyPasskeyAuthenticationResponse(
+  user: UserWithAuthenticators,
+  response: AuthenticationResponseJSON
+): Promise<VerifiedRegistrationResponse> {
+  const authenticator = user.authenticators.find(({ credentialID }) => {
+    return credentialID === response.id;
+  });
+  if (!authenticator || !user.currentChallenge) return { verified: false };
+
+  try {
+    const verification = await verifyAuthenticationResponse({
+      response,
+      expectedChallenge: user.currentChallenge,
+      expectedOrigin: origin,
+      expectedRPID: rpID,
+      authenticator: {
+        ...authenticator,
+        credentialID: new Uint8Array(
+          Buffer.from(authenticator.credentialID, "base64")
+        ),
+      },
+    });
+
+    if (verification.verified) {
+      const { authenticationInfo } = verification;
+      if (!authenticationInfo) return { verified: false };
+
+      const { newCounter } = authenticationInfo;
+
+      Promise.all([
+        db.authenticator.update({
+          where: { id: authenticator.id },
+          data: { counter: newCounter },
+        }),
+        db.user.update({
+          where: { id: user.id },
+          data: { currentChallenge: null },
+        }),
+      ]);
     }
 
     return verification;
@@ -120,4 +175,3 @@ export async function verifyPasskeyRegistrationResponse(
     return { verified: false };
   }
 }
-
