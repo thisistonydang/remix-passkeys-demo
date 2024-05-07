@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
+    "build:db": "npx prisma generate",
+    "update:db": "npx prisma db push",
     "dev": "remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
