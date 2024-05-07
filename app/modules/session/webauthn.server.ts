@@ -81,19 +81,33 @@ export async function verifyPasskeyRegistrationResponse(
         credentialBackedUp,
       } = registrationInfo;
 
-      await db.authenticator.create({
-        data: {
-          userId: user.id,
-          credentialID: Buffer.from(credentialID)
-            .toString("base64")
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=+$/, ""),
-          credentialPublicKey: Buffer.from(credentialPublicKey),
-          counter,
-          credentialDeviceType,
-          credentialBackedUp,
-        },
+      await Promise.all([
+        db.authenticator.create({
+          data: {
+            userId: user.id,
+            credentialID: Buffer.from(credentialID)
+              .toString("base64")
+              .replace(/\+/g, "-")
+              .replace(/\//g, "_")
+              .replace(/=+$/, ""),
+            credentialPublicKey: Buffer.from(credentialPublicKey),
+            counter,
+            credentialDeviceType,
+            credentialBackedUp,
+          },
+        }),
+        db.user.update({
+          where: { id: user.id },
+          data: { currentChallenge: null },
+        }),
+      ]);
+    }
+
+    return verification;
+  } catch {
+    return { verified: false };
+  }
+}
       });
       await db.user.update({
         where: { id: user.id },
